@@ -113,7 +113,7 @@ func (h *CategoryHandler) update(w http.ResponseWriter, r *http.Request, id stri
 		return
 	}
 
-	model.JSONResponse(w, http.StatusNoContent, true, "category updated", nil)
+	model.JSONResponse(w, http.StatusOK, true, "category updated", nil)
 }
 
 // GET /categories/{id}
@@ -129,5 +129,5 @@ func (h *CategoryHandler) delete(w http.ResponseWriter, id string) {
 		return
 	}
 
-	model.JSONResponse(w, http.StatusNoContent, true, "category deleted", nil)
+	model.JSONResponse(w, http.StatusOK, true, "category deleted", nil)
 }
