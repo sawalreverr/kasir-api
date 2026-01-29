@@ -27,20 +27,20 @@ func (s *CategoryService) GetByID(id string) (*model.Category, error) {
 	return c, nil
 }
 
-func (s *CategoryService) Create(name string) error {
+func (s *CategoryService) Create(name, description string) error {
 	if name == "" {
 		return ErrCategoryNameEmpty
 	}
 
-	return s.repo.Create(name)
+	return s.repo.Create(name, description)
 }
 
-func (s *CategoryService) Update(id, name string) error {
+func (s *CategoryService) Update(id, name, description string) error {
 	if name == "" {
 		return ErrCategoryNameEmpty
 	}
 
-	err := s.repo.Update(id, name)
+	err := s.repo.Update(id, name, description)
 	if err == sql.ErrNoRows {
 		return ErrCategoryNotFound
 	}

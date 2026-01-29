@@ -16,7 +16,7 @@ func NewCategoryRepository(db *sql.DB) *CategoryRepository {
 
 func (r *CategoryRepository) FindByID(id string) (*model.Category, error) {
 	var c model.Category
-	err := r.db.QueryRow(`SELECT id, name FROM categories WHERE id = $1 AND deleted_at IS NULL`, id).Scan(&c.ID, &c.Name)
+	err := r.db.QueryRow(`SELECT id, name, description FROM categories WHERE id = $1 AND deleted_at IS NULL`, id).Scan(&c.ID, &c.Name, &c.Description)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -25,13 +25,13 @@ func (r *CategoryRepository) FindByID(id string) (*model.Category, error) {
 	return &c, err
 }
 
-func (r *CategoryRepository) Create(name string) error {
-	_, err := r.db.Exec(`INSERT INTO categories (name) VALUES ($1)`, name)
+func (r *CategoryRepository) Create(name, description string) error {
+	_, err := r.db.Exec(`INSERT INTO categories (name, description) VALUES ($1, $2)`, name, description)
 	return err
 }
 
-func (r *CategoryRepository) Update(id, name string) error {
-	result, err := r.db.Exec(`UPDATE categories SET name = $1, updated_at = now() WHERE id = $2 AND deleted_at IS NULL`, name, id)
+func (r *CategoryRepository) Update(id, name, description string) error {
+	result, err := r.db.Exec(`UPDATE categories SET name = $1, description = $2, updated_at = now() WHERE id = $3 AND deleted_at IS NULL`, name, description, id)
 	if err != nil {
 		return nil
 	}
@@ -59,7 +59,7 @@ func (r *CategoryRepository) Delete(id string) error {
 }
 
 func (r *CategoryRepository) FindAll() ([]model.Category, error) {
-	rows, err := r.db.Query(`SELECT id, name FROM categories WHERE deleted_at IS NULL`)
+	rows, err := r.db.Query(`SELECT id, name, description FROM categories WHERE deleted_at IS NULL ORDER BY id ASC`)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (r *CategoryRepository) FindAll() ([]model.Category, error) {
 	var categories []model.Category
 	for rows.Next() {
 		var c model.Category
-		rows.Scan(&c.ID, &c.Name)
+		rows.Scan(&c.ID, &c.Name, &c.Description)
 		categories = append(categories, c)
 	}
 

@@ -9,7 +9,8 @@ import (
 )
 
 type CategoryRequest struct {
-	Name string `json:"name"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 type CategoryHandler struct {
@@ -69,7 +70,7 @@ func (h *CategoryHandler) create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.Create(req.Name)
+	err := h.service.Create(req.Name, req.Description)
 	if err != nil {
 		model.JSONResponse(w, http.StatusBadRequest, false, err.Error(), nil)
 		return
@@ -102,7 +103,7 @@ func (h *CategoryHandler) update(w http.ResponseWriter, r *http.Request, id stri
 		return
 	}
 
-	err := h.service.Update(id, req.Name)
+	err := h.service.Update(id, req.Name, req.Description)
 	if err == service.ErrCategoryNotFound {
 		model.JSONResponse(w, http.StatusNotFound, false, "category not found", nil)
 		return
