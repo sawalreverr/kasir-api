@@ -38,7 +38,7 @@ func main() {
 	mux.HandleFunc("/categories", categoryHandler.Categories)
 	mux.HandleFunc("/categories/", categoryHandler.CategoryByID)
 
-	log.Printf("server running on port %s", cfg.ServerPort)
+	log.Printf("Server running on port %s", cfg.ServerPort)
 	if err := http.ListenAndServe(":"+cfg.ServerPort, mux); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}

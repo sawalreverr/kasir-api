@@ -15,7 +15,7 @@ curl -i "${BASE_URL}/categories/1"
 echo -e "\n"
 
 echo "4. PUT /categories/1 (update category id 1)"
-curl -i -X PUT -H "Content-Type: application/json" -d '{"id": 1, "name":"headset", "description":"Headset"}' "${BASE_URL}/categories/1"
+curl -i -X PUT -H "Content-Type: application/json" -d '{"name":"headset", "description":"Headset"}' "${BASE_URL}/categories/1"
 echo -e "\n"
 
 echo "5. DELETE /categories/2 (delete category id 2)"
