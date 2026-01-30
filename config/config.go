@@ -10,6 +10,8 @@ import (
 type Config struct {
 	Port   string `mapstructure:"PORT"`
 	DBConn string `mapstructure:"DB_CONN"`
+	Env    string `mapstructure:"ENV"`
+	Seed   bool   `mapstructure:"SEED"`
 }
 
 func Load() (*Config, error) {
@@ -24,6 +26,8 @@ func Load() (*Config, error) {
 	config := Config{
 		Port:   viper.GetString("PORT"),
 		DBConn: viper.GetString("DB_CONN"),
+		Env:    viper.GetString("ENV"),
+		Seed:   viper.GetBool("SEED"),
 	}
 
 	return &config, nil

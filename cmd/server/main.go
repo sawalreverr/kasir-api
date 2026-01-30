@@ -4,6 +4,7 @@ import (
 	"basic-go-api/config"
 	"basic-go-api/internal/handler"
 	"basic-go-api/internal/infra/database"
+	"basic-go-api/internal/infra/seed"
 	"basic-go-api/internal/repository"
 	"basic-go-api/internal/service"
 	"log"
@@ -23,6 +24,11 @@ func main() {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
 	defer db.Close()
+
+	// run seed
+	if cfg.Env == "development" && cfg.Seed {
+		seed.Run(db)
+	}
 
 	// init repository
 	categoryRepo := repository.NewCategoryRepository(db)
