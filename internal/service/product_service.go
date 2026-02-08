@@ -28,8 +28,8 @@ func (s *ProductService) GetByID(ctx context.Context, id string) (*model.Product
 	return p, nil
 }
 
-func (s *ProductService) GetAll(ctx context.Context) ([]model.Product, error) {
-	return s.repo.FindAll(ctx)
+func (s *ProductService) GetAll(ctx context.Context, name string) ([]model.Product, error) {
+	return s.repo.FindAll(ctx, name)
 }
 
 func (s *ProductService) Create(ctx context.Context, p *model.Product) error {

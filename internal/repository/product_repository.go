@@ -157,16 +157,25 @@ func (r *ProductRepository) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *ProductRepository) FindAll(ctx context.Context) ([]model.Product, error) {
-	rows, err := r.db.QueryContext(ctx, `
+func (r *ProductRepository) FindAll(ctx context.Context, nameFilter string) ([]model.Product, error) {
+	query := `
 		SELECT
 			p.id, p.name, p.price, p.stock,
 			pc.category_id
 		FROM products p
 		LEFT JOIN product_categories pc ON pc.product_id = p.id
 		WHERE p.deleted_at IS NULL
-		ORDER BY p.id
-	`)
+	`
+	var args []any
+
+	if nameFilter != "" {
+		query += " AND p.name ILIKE $1"
+		args = append(args, "%"+nameFilter+"%")
+	}
+
+	query += " ORDER BY p.id"
+
+	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -182,8 +191,7 @@ func (r *ProductRepository) FindAll(ctx context.Context) ([]model.Product, error
 			categoryID   sql.NullString
 		)
 
-		err := rows.Scan(&pID, &name, &price, &stock, &categoryID)
-		if err != nil {
+		if err := rows.Scan(&pID, &name, &price, &stock, &categoryID); err != nil {
 			return nil, err
 		}
 
@@ -204,10 +212,28 @@ func (r *ProductRepository) FindAll(ctx context.Context) ([]model.Product, error
 		}
 	}
 
-	var result []model.Product
+	result := make([]model.Product, 0, len(products))
 	for _, p := range products {
 		result = append(result, *p)
 	}
 
 	return result, nil
+}
+
+func (r *ProductRepository) UpdateStock(ctx context.Context, tx *sql.Tx, id string, quantity int) error {
+	result, err := tx.ExecContext(ctx, `
+		UPDATE products
+		SET stock = stock - $1, updated_at = now()
+		WHERE id = $2 AND deleted_at IS NULL AND stock >= $1
+	`, quantity, id)
+	if err != nil {
+		return err
+	}
+
+	affected, _ := result.RowsAffected()
+	if affected == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
 }
