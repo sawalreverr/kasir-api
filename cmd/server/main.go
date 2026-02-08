@@ -33,14 +33,17 @@ func main() {
 	// init repository
 	categoryRepo := repository.NewCategoryRepository(db)
 	productRepo := repository.NewProductRepository(db)
+	transactionRepo := repository.NewTransactionRepository(db)
 
 	// init service
 	categoryService := service.NewCategoryService(categoryRepo)
 	productService := service.NewProductService(productRepo)
+	transactionService := service.NewTransactionService(transactionRepo, productRepo, db)
 
 	// init handler
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 	productHandler := handler.NewProductHandler(productService)
+	transactionHandler := handler.NewTransactionHandler(transactionService)
 
 	// setup router
 	mux := http.NewServeMux()
@@ -49,6 +52,7 @@ func main() {
 	mux.HandleFunc("/categories/", categoryHandler.CategoryByID)
 	mux.HandleFunc("/products", productHandler.Products)
 	mux.HandleFunc("/products/", productHandler.ProductByID)
+	mux.HandleFunc("/checkout", transactionHandler.Transactions)
 
 	log.Printf("Server running on port %s", cfg.Port)
 	if err := http.ListenAndServe(":"+cfg.Port, mux); err != nil {
