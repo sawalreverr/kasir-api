@@ -55,8 +55,9 @@ func (h *ProductHandler) ProductByID(w http.ResponseWriter, r *http.Request) {
 
 func (h *ProductHandler) getAll(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	name := r.URL.Query().Get("name")
 
-	data, err := h.service.GetAll(ctx)
+	data, err := h.service.GetAll(ctx, name)
 	if err != nil {
 		model.JSONResponse(w, http.StatusInternalServerError, false, err.Error(), nil)
 		return
