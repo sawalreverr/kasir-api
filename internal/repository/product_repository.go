@@ -219,3 +219,21 @@ func (r *ProductRepository) FindAll(ctx context.Context, nameFilter string) ([]m
 
 	return result, nil
 }
+
+func (r *ProductRepository) UpdateStock(ctx context.Context, tx *sql.Tx, id string, quantity int) error {
+	result, err := tx.ExecContext(ctx, `
+		UPDATE products
+		SET stock = stock - $1, updated_at = now()
+		WHERE id = $2 AND deleted_at IS NULL AND stock >= $1
+	`, quantity, id)
+	if err != nil {
+		return err
+	}
+
+	affected, _ := result.RowsAffected()
+	if affected == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
+}
