@@ -1,4 +1,4 @@
-# Basic GO API
+# Kasir API
 
 ## Task Session 1
 Implementation Category CRUD [DONE]
